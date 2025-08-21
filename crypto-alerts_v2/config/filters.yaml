@@ -1,0 +1,9 @@
+profiles:
+  safe:
+    momentum_z: 0.25
+    vol_z: 0.9
+    atr_cap_pct: 3.0
+    allow_divergence: true
+    oi_delta_min_pct: 0.0
+    governor_trades_per_day: { min: 1, max: 5 }
+    cooldown_minutes: 20

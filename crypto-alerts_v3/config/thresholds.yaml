@@ -1,0 +1,16 @@
+schema: v1
+risk_variants_pct: [0.5, 1.0]
+exit_b:
+  sl_pct: 6.0
+  tp1_pct: 8.0
+  tp1_part: 0.33
+  tp2_pct: 12.0
+intrabar_priority:
+  before_tp1: "SL_over_TP1"
+  after_tp1:  "BE_over_TP2"
+time_exit:
+  max_hold_minutes: 90
+  profit_buffer_pct: 0.10
+ml_thresholds:
+  safe: { R_min: 0.20, pSL_max: 0.30 }
+  fast: { R_min: 0.10, pSL_max: 0.45 }

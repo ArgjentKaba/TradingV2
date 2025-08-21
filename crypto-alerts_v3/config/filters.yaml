@@ -1,0 +1,22 @@
+schema: v1
+profiles:
+  safe:
+    oi_delta_5m_pct: { long_min: 3.0, short_max: -3.0 }
+    volume_zscore_20_min: 2.0
+    momentum_1m_pct: { long_min: 0.80, short_max: -0.80 }
+    divergence_oi_price: { allowed: false, min_abs_oi_pct: null, max_abs_mom_pct: null }
+    atr14_pct_max: 1.8
+    liquidity_percentile_30d_min: 50
+    spread_bps_max: 3
+    cooldown_minutes: 30
+    governor_trades_per_day: { min: 2, max: 4 }
+  fast:
+    oi_delta_5m_pct: { long_min: 1.0, short_max: -1.0 }
+    volume_zscore_20_min: 1.0
+    momentum_1m_pct: { long_min: 0.30, short_max: -0.30 }
+    divergence_oi_price: { allowed: true, min_abs_oi_pct: 2.0, max_abs_mom_pct: 0.30 }
+    atr14_pct_max: 2.5
+    liquidity_percentile_30d_min: 30
+    spread_bps_max: 6
+    cooldown_minutes: 10
+    governor_trades_per_day: { min: 5, max: 10 }

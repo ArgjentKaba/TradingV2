@@ -1,0 +1,15 @@
+schema: v1
+time_zone: "UTC"
+universe_file: "symbols.txt"
+days_back: 30
+variants: ["risk-0.5-fast","risk-1.0-fast","risk-0.5-safe","risk-1.0-safe"]
+output:
+  dir: "runs"
+  save_combined: true
+logging:
+  csv_log_schema: "v2"
+  write_run_meta: true
+
+use_ml_gate: true
+use_shorts: true
+weekly_retrain: true
