@@ -1,8 +1,6 @@
-# Zürich-Sommerzeit ≈ UTC+2 ⇒ 07:00–21:00 CH = 05:00–19:00 UTC
-session_start: "05:00"
-session_end:   "19:00"
+session_start: "05:00"   # 07:00 Zürich (Sommer)
+session_end:   "19:00"   # 21:00 Zürich
 days_back: 30
 force_accept: false
 variants:
   - "SAFE:1.0"
-  - "FAST:1.0"
