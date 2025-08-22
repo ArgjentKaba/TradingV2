@@ -1,3 +1,20 @@
+files: \.py$
+exclude: |
+  ^(
+    \.venv/|
+    venv/|
+    .*/\.venv/|
+    .*/venv/|
+    .*/site-packages/|
+    crypto-alerts_v2/\.venv/|
+    crypto-alerts_v3/\.venv/|
+    crypto-alerts_v3/|
+    runs/|
+    data/|
+    .*\.csv$|
+    .*\.log$
+  )$
+
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.7

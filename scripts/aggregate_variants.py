@@ -20,22 +20,22 @@ Usage:
 
 Requires: pandas, numpy
 """
+
 from __future__ import annotations
 import argparse
 import json
 import os
-import re
 from typing import Dict, List
 
 import numpy as np
 import pandas as pd
 
 TERMINAL_REASONS = (
-    "ExitA_SL",              # full loss
-    "ExitB_StopBE",         # 67% leg closed at BE (full flat)
-    "ExitB_TP2",            # 67% leg closed at TP2 (full flat)
-    "TimeMax_90m_Profit",   # time exit full
-    "TimeMax_90m_BE",       # time exit at BE
+    "ExitA_SL",  # full loss
+    "ExitB_StopBE",  # 67% leg closed at BE (full flat)
+    "ExitB_TP2",  # 67% leg closed at TP2 (full flat)
+    "TimeMax_90m_Profit",  # time exit full
+    "TimeMax_90m_BE",  # time exit at BE
 )
 
 VARIANT_NAME_MAP = {
@@ -48,9 +48,13 @@ VARIANT_NAME_MAP = {
 
 def parse_args():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--runs-dir", default="runs", help="Directory containing trades_*.csv files")
+    ap.add_argument(
+        "--runs-dir", default="runs", help="Directory containing trades_*.csv files"
+    )
     ap.add_argument("--out", default="runs", help="Where to write summary outputs")
-    ap.add_argument("--days", type=int, default=30, help="How many trailing days to aggregate")
+    ap.add_argument(
+        "--days", type=int, default=30, help="How many trailing days to aggregate"
+    )
     return ap.parse_args()
 
 
@@ -114,7 +118,9 @@ def _load_and_filter(path: str, days: int) -> pd.DataFrame:
     return df
 
 
-def summarize_variant(df: pd.DataFrame, variant_label: str) -> Dict[str, float | int | str]:
+def summarize_variant(
+    df: pd.DataFrame, variant_label: str
+) -> Dict[str, float | int | str]:
     if df.empty:
         return {
             "variant": variant_label,
@@ -146,23 +152,35 @@ def summarize_variant(df: pd.DataFrame, variant_label: str) -> Dict[str, float |
     equity_series = df.sort_values("time_exit").get("equity_after")
     if equity_series is not None and equity_series.notna().any():
         equity = equity_series.astype(float)
-        equity_start = float(df.sort_values("time_exit").get("equity_before").dropna().iloc[0]) if "equity_before" in df.columns and df["equity_before"].notna().any() else float(equity.iloc[0])
+        equity_start = (
+            float(df.sort_values("time_exit").get("equity_before").dropna().iloc[0])
+            if "equity_before" in df.columns and df["equity_before"].notna().any()
+            else float(equity.iloc[0])
+        )
         equity_end = float(equity.iloc[-1])
-        equity_change_pct = (equity_end / equity_start - 1.0) * 100.0 if equity_start else 0.0
+        equity_change_pct = (
+            (equity_end / equity_start - 1.0) * 100.0 if equity_start else 0.0
+        )
         max_dd_pct = _max_drawdown_pct(equity)
     else:
         # fallback: use sum of USD PnL; assume start 10k
         start = 10000.0
-        pnl_usd = df.get("account_pnl_usd", pd.Series([], dtype=float)).astype(float).sum()
+        pnl_usd = (
+            df.get("account_pnl_usd", pd.Series([], dtype=float)).astype(float).sum()
+        )
         equity_start = start
         equity_end = start + float(pnl_usd)
         equity_change_pct = (equity_end / equity_start - 1.0) * 100.0
         max_dd_pct = 0.0
 
     # sums
-    sum_pnl_usd = float(df.get("account_pnl_usd", pd.Series([], dtype=float)).astype(float).sum())
+    sum_pnl_usd = float(
+        df.get("account_pnl_usd", pd.Series([], dtype=float)).astype(float).sum()
+    )
     # comp-based pct is reported as equity_change_pct; also provide raw sum of account_pnl_pct (not ideal for compounding)
-    sum_pnl_pct = float(df.get("account_pnl_pct", pd.Series([], dtype=float)).astype(float).sum())
+    sum_pnl_pct = float(
+        df.get("account_pnl_pct", pd.Series([], dtype=float)).astype(float).sum()
+    )
 
     # rates
     sl_count = int(terminal["reason"].astype(str).str.contains("ExitA_SL").sum())
@@ -172,7 +190,13 @@ def summarize_variant(df: pd.DataFrame, variant_label: str) -> Dict[str, float |
 
     # avg R on terminal rows only (approximation)
     if "R_multiple" in terminal.columns:
-        avg_R_terminal = float(pd.to_numeric(terminal["R_multiple"], errors="coerce").dropna().astype(float).mean() or 0.0)
+        avg_R_terminal = float(
+            pd.to_numeric(terminal["R_multiple"], errors="coerce")
+            .dropna()
+            .astype(float)
+            .mean()
+            or 0.0
+        )
     else:
         avg_R_terminal = 0.0
 
@@ -207,8 +231,8 @@ def main():
         if df.empty:
             continue
         # Detect variant from columns (preferred) or filename
-        prof = (df.get("profile_run") or df.get("profile") or pd.Series(["SAFE"]))
-        risk = (df.get("risk_perc_run") or df.get("risk_perc") or pd.Series(["0.5"]))
+        prof = df.get("profile_run") or df.get("profile") or pd.Series(["SAFE"])
+        risk = df.get("risk_perc_run") or df.get("risk_perc") or pd.Series(["0.5"])
         profile_val = str(prof.iloc[0]) if len(prof) > 0 else "SAFE"
         risk_val = str(risk.iloc[0]) if len(risk) > 0 else "0.5"
         variant_label = _normalize_variant_name(profile_val, risk_val)
@@ -221,10 +245,14 @@ def main():
 
     # Rank: highest equity_change_pct with MaxDD cap 5%; ties by lowest sl_rate
     df_sum = pd.DataFrame(summaries)
-    eligible = df_sum[df_sum["max_dd_pct"] >= -5.0]  # max_dd is negative; >= -5.0 means drawdown not worse than -5%
+    eligible = df_sum[
+        df_sum["max_dd_pct"] >= -5.0
+    ]  # max_dd is negative; >= -5.0 means drawdown not worse than -5%
     if eligible.empty:
         eligible = df_sum.copy()
-    ranked = eligible.sort_values(["equity_change_pct", "sl_rate"], ascending=[False, True]).reset_index(drop=True)
+    ranked = eligible.sort_values(
+        ["equity_change_pct", "sl_rate"], ascending=[False, True]
+    ).reset_index(drop=True)
 
     # Write outputs
     out_csv = os.path.join(args.out, f"summary_{args.days}d.csv")

@@ -4,6 +4,7 @@ import pandas as pd
 # SAFE / FAST Filter aus filters.yaml anwenden
 # -------------------------------------------------------------------
 
+
 def apply_filters(df: pd.DataFrame, filters_cfg: dict):
     """
     Wendet SAFE- und FAST-Filter auf das DataFrame an.
@@ -37,9 +38,11 @@ def _scan_with_profile(df: pd.DataFrame, cfg: dict, profile: str):
     step = cfg.get("step", 500)  # Dummy: alle 500 Kerzen
     for i, row in enumerate(df.itertuples(index=False)):
         if i % step == 0:  # Platzhalter statt echter Berechnungen
-            entries.append({
-                "time": getattr(row, "time"),
-                "price": getattr(row, "close"),
-                "profile": profile,
-            })
+            entries.append(
+                {
+                    "time": getattr(row, "time"),
+                    "price": getattr(row, "close"),
+                    "profile": profile,
+                }
+            )
     return entries

@@ -1,7 +1,14 @@
 from datetime import datetime, timedelta
 
+
 class Governor:
-    def __init__(self, profile: str = "SAFE", trades_min_per_day: int = 2, trades_max_per_day: int = 4, cooldown_minutes: int = 30):
+    def __init__(
+        self,
+        profile: str = "SAFE",
+        trades_min_per_day: int = 2,
+        trades_max_per_day: int = 4,
+        cooldown_minutes: int = 30,
+    ):
         self.profile = profile.upper()
         self.trades_min = trades_min_per_day
         self.trades_max = trades_max_per_day

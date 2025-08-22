@@ -1,5 +1,6 @@
 from datetime import datetime, time
 
+
 def in_session(t: datetime, start: str, end: str) -> bool:
     # start/end format "HH:MM"
     h1, m1 = map(int, start.split(":"))
