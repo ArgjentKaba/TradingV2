@@ -1,10 +1,41 @@
+# Nur Repo-Code prüfen – Venvs, Daten, Docs, CI, etc. ausschließen
+exclude: |
+  (?x)^(
+    \.venv/|
+    venv/|
+    .*/\.venv/|
+    .*/venv/|
+    crypto-alerts_v2/\.venv/|
+    crypto-alerts_v3/|
+    runs/|
+    \.data/|
+    data/|
+    docs/|
+    \.git/|
+    \.github/|
+    .*\.csv$|
+    .*\.log$|
+    .*\.md$|
+    .*\.ipynb_checkpoints/
+  )$
+
+default_stages: [commit]
+default_language_version:
+  python: python3.12
+
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.7
+    rev: v0.6.8
     hooks:
       - id: ruff
+        name: ruff (lint)
+        args: [--fix, --exit-non-zero-on-fix, --force-exclude]
       - id: ruff-format
+        name: ruff (format)
+        args: [--force-exclude]
+
   - repo: https://github.com/psf/black
     rev: 24.8.0
     hooks:
       - id: black
+        args: [--quiet]
